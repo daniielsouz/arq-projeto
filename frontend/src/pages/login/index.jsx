@@ -10,20 +10,28 @@ export default function Login() {
   const [erro, setErro] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
-  const loginEnv = import.meta.env.VITE_LOGIN;
-  const senhaEnv = import.meta.env.VITE_PASSWORD;
-
 
   const from = location.state?.from?.pathname || '/Adm';
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if (login === loginEnv && senha === senhaEnv) {
-      localStorage.setItem('token', 'seu-token-aqui');
-      navigate(from, { replace: true }); 
-    } else {
-      setErro('Login ou senha inválidos');
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ login, senha }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login ou senha inválidos');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      navigate(from, { replace: true });
+    } catch (err) {
+      setErro(err.message);
       setLogin('');
       setSenha('');
     }
@@ -31,36 +39,35 @@ export default function Login() {
 
   return (
     <AnimatedPage>
-    <PageTitle title="Login - Janaina Possamai" />
-    <div className={style.loginContainer}>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Login: </label>
-          <input 
-            className='globalInput'
-            id='login'
-            type="text"
-            value={login}
-            onChange={e => setLogin(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Senha:</label>
-          <input
-            className='globalInput'
-            type="password"
-            id='password'
-            value={senha}
-            onChange={e => setSenha(e.target.value)}
-            required
-          />
-        </div>
-        <button className='globalButton' type="submit">Entrar</button>
-        {console.log(login, senha)}
-      </form>
-      {erro && <p style={{ color: 'red' }}>{erro}</p>}
-    </div>
+      <PageTitle title="Login - Janaina Possamai" />
+      <div className={style.loginContainer}>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Login: </label>
+            <input
+              className="globalInput"
+              id="login"
+              type="text"
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Senha:</label>
+            <input
+              className="globalInput"
+              type="password"
+              id="password"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              required
+            />
+          </div>
+          <button className="globalButton" type="submit">Entrar</button>
+        </form>
+        {erro && <p style={{ color: 'red' }}>{erro}</p>}
+      </div>
     </AnimatedPage>
   );
 }

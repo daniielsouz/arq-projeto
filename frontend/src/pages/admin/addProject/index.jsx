@@ -45,8 +45,13 @@ export default function Adm() {
       if (formData.coverImg) data.append('coverImg', formData.coverImg);
       formData.galeryImg.forEach(file => data.append('galeryImg', file));
 
-      const response = await fetch('http://localhost:5000/saveProject', {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/saveProject`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: data
       });
 
@@ -55,7 +60,7 @@ export default function Adm() {
       if (response.ok) {
         showToast(result.message || 'Projeto adicionado com sucesso!', 'success');
         setTimeout(() => {
-          window.location.reload()
+          window.location.reload();
         }, 1500);
       } else {
         throw new Error(result.message || 'Erro ao adicionar projeto');

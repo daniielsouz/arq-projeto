@@ -6,7 +6,7 @@ let singleton;
 async function connect() {
   if (singleton) return singleton;
 
-  const client = new MongoClient(process.env.MONGO_HOST);
+  const client = new MongoClient(process.env.MONGO_URI);
   await client.connect();
   singleton = client.db(process.env.MONGO_DATABASE);
   return singleton;

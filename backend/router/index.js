@@ -5,6 +5,7 @@ const cloudinary = require('cloudinary').v2;
 const { ObjectId } = require('mongodb');
 const router = express.Router();
 const db = require('../db.js');
+const authMiddleware = require('../middleware/authMiddleware');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -23,6 +24,7 @@ function uploadToCloudinary(fileBuffer, folder = '') {
     stream.end(fileBuffer);
   });
 }
+
 
 router.get('/', async (req, res) => {
   try {
@@ -55,84 +57,9 @@ router.get('/project/:id', async (req, res) => {
   }
 });
 
-router.delete('/portifolio/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    const dbConn = await db.connect();
-    
-    const projeto = await dbConn.collection('projetos').findOne({ _id: new ObjectId(id) });
-
-    if (!projeto) {
-      return res.status(404).json({ message: 'Projeto não encontrado para deletar' });
-    }
-
-    if (projeto.coverImg?.public_id) {
-      await cloudinary.uploader.destroy(projeto.coverImg.public_id);
-    }
-
-    if (Array.isArray(projeto.galeryImg)) {
-      for (const img of projeto.galeryImg) {
-        if (img.public_id) {
-          await cloudinary.uploader.destroy(img.public_id);
-        }
-      }
-    }
-
-    const result = await dbConn.collection('projetos').deleteOne({ _id: new ObjectId(id) });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ message: 'Projeto não encontrado para deletar' });
-    }
-
-    res.json({ message: 'Projeto e imagens deletados com sucesso' });
-  } catch (error) {
-    console.error('Erro ao deletar projeto e imagens:', error);
-    res.status(500).json({ message: 'Erro interno ao deletar projeto' });
-  }
-});
-
-router.delete('/portifolio/:projectId/imagem', async (req, res) => {
-  try {
-    const projectId = req.params.projectId;
-    const imageUrl = req.query.imageUrl;
-
-    if (!imageUrl) {
-      return res.status(400).json({ message: 'Informe o URL da imagem para apagar' });
-    }
-
-    const dbConn = await db.connect();
-    const projeto = await dbConn.collection('projetos').findOne({ _id: new ObjectId(projectId) });
-
-    if (!projeto) {
-      return res.status(404).json({ message: 'Projeto não encontrado' });
-    }
-
-    const image = projeto.galeryImg.find(img => img.url === imageUrl);
-
-    if (!image) {
-      return res.status(404).json({ message: 'Imagem não encontrada no projeto' });
-    }
-
-    await cloudinary.uploader.destroy(image.public_id);
-
-    const result = await dbConn.collection('projetos').updateOne(
-      { _id: new ObjectId(projectId) },
-      { $pull: { galeryImg: { url: imageUrl } } }
-    );
-
-    if (result.modifiedCount === 0) {
-      return res.status(404).json({ message: 'Imagem não encontrada no projeto' });
-    }
-
-    res.json({ message: 'Imagem apagada com sucesso!' });
-  } catch (error) {
-    console.error('Erro ao apagar imagem:', error);
-    res.status(500).json({ message: 'Erro ao apagar imagem' });
-  }
-});
-
 router.post(
   '/saveProject',
+  authMiddleware,
   upload.fields([
     { name: 'coverImg', maxCount: 1 },
     { name: 'galeryImg', maxCount: 20 },
@@ -169,33 +96,43 @@ router.post(
   }
 );
 
-router.post('/portifolio/:projectId/imagens', upload.array('galeryImg', 20), async (req, res) => {
+router.delete('/portifolio/:id', authMiddleware, async (req, res) => {
   try {
-    const projectId = req.params.projectId;
-    const galeryImg = req.files;
+    const id = req.params.id;
+    const dbConn = await db.connect();
+    
+    const projeto = await dbConn.collection('projetos').findOne({ _id: new ObjectId(id) });
 
-    if (!galeryImg.length) {
-      return res.status(400).json({ message: "Nenhuma imagem enviada" });
+    if (!projeto) {
+      return res.status(404).json({ message: 'Projeto não encontrado para deletar' });
     }
 
-    const galeryData = await Promise.all(
-      galeryImg.map(file => uploadToCloudinary(file.buffer, 'projetos'))
-    );
+    if (projeto.coverImg?.public_id) {
+      await cloudinary.uploader.destroy(projeto.coverImg.public_id);
+    }
 
-    const dbConn = await db.connect();
+    if (Array.isArray(projeto.galeryImg)) {
+      for (const img of projeto.galeryImg) {
+        if (img.public_id) {
+          await cloudinary.uploader.destroy(img.public_id);
+        }
+      }
+    }
 
-    await dbConn.collection('projetos').updateOne(
-      { _id: new ObjectId(projectId) },
-      { $push: { galeryImg: { $each: galeryData } } }
-    );
-    res.json({ message: "Imagens adicionadas com sucesso" });
+    const result = await dbConn.collection('projetos').deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'Projeto não encontrado para deletar' });
+    }
+
+    res.json({ message: 'Projeto e imagens deletados com sucesso' });
   } catch (error) {
-    console.error('Erro ao adicionar imagens:', error);
-    res.status(500).json({ message: "Erro ao adicionar imagem" });
+    console.error('Erro ao deletar projeto e imagens:', error);
+    res.status(500).json({ message: 'Erro interno ao deletar projeto' });
   }
 });
 
-router.put('/portifolio/:id', async (req, res) => {
+router.put('/portifolio/:id', authMiddleware, async (req, res) => {
   try {
     const { nameProject } = req.body;
     const id = req.params.id;
@@ -218,6 +155,77 @@ router.put('/portifolio/:id', async (req, res) => {
   } catch (error) {
     console.error('Erro ao atualizar nome do projeto:', error);
     res.status(500).json({ message: 'Erro interno ao atualizar projeto' });
+  }
+});
+
+router.post(
+  '/portifolio/:projectId/imagens',
+  authMiddleware,
+  upload.array('galeryImg', 20),
+  async (req, res) => {
+    try {
+      const projectId = req.params.projectId;
+      const galeryImg = req.files;
+
+      if (!galeryImg.length) {
+        return res.status(400).json({ message: "Nenhuma imagem enviada" });
+      }
+
+      const galeryData = await Promise.all(
+        galeryImg.map(file => uploadToCloudinary(file.buffer, 'projetos'))
+      );
+
+      const dbConn = await db.connect();
+
+      await dbConn.collection('projetos').updateOne(
+        { _id: new ObjectId(projectId) },
+        { $push: { galeryImg: { $each: galeryData } } }
+      );
+      res.json({ message: "Imagens adicionadas com sucesso" });
+    } catch (error) {
+      console.error('Erro ao adicionar imagens:', error);
+      res.status(500).json({ message: "Erro ao adicionar imagem" });
+    }
+  }
+);
+
+router.delete('/portifolio/:projectId/imagem', authMiddleware, async (req, res) => {
+  try {
+    const projectId = req.params.projectId;
+    const imageUrl = req.query.imageUrl;
+
+    if (!imageUrl) {
+      return res.status(400).json({ message: 'Informe o URL da imagem para apagar' });
+    }
+
+    const dbConn = await db.connect();
+    const projeto = await dbConn.collection('projetos').findOne({ _id: new ObjectId(projectId) });
+
+    if (!projeto) {
+      return res.status(404).json({ message: 'Projeto não encontrado' });
+    }
+
+    const image = projeto.galeryImg.find(img => img.url === imageUrl);
+
+    if (!image) {
+      return res.status(404).json({ message: 'Imagem não encontrada no projeto' });
+    }
+
+    await cloudinary.uploader.destroy(image.public_id);
+
+    const result = await dbConn.collection('projetos').updateOne(
+      { _id: new ObjectId(projectId) },
+      { $pull: { galeryImg: { url: imageUrl } } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: 'Imagem não encontrada no projeto' });
+    }
+
+    res.json({ message: 'Imagem apagada com sucesso!' });
+  } catch (error) {
+    console.error('Erro ao apagar imagem:', error);
+    res.status(500).json({ message: 'Erro ao apagar imagem' });
   }
 });
 
