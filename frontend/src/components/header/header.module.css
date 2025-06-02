@@ -1,5 +1,5 @@
 
-header {
+.headerContainer {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -7,16 +7,16 @@ header {
     padding: 1em 2em;
 }
 
-header img {
+.headerImg {
     width: 15em;
 }
 
-header p {
+.headerText {
     font-size: 0.5em;
     margin: 0.5em;
 }
 
-header ul {
+.headerList {
     width: 100vw;
     display: flex;
     align-items: center;
@@ -24,19 +24,19 @@ header ul {
     margin-top: 30px;
 }
 
-header ul li {
+.headerListItens {
     padding: 0.8em 1.6em;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 50% 2.5em;
 }
 
-header ul li:hover {
+.headerListItens:hover {
     transform: scale(1.1); 
     box-shadow: 0 5px 5px var(--text-nav-color); 
     animation: border-radius-animation 2s ease-in-out infinite alternate-reverse; 
 }
 
-header a {
+.headerLinks {
     font-weight: bold;
     font-size: 1em;
     color: var(--text-nav-color);
@@ -53,33 +53,33 @@ header a {
 }
 
 @media(max-width: 768px) {
-header img {
+.headerImg {
     width: 10em;
 }
-header ul li {
+.headerListItens {
     padding: 0.4em 0.8em;
     border-radius: 50% 2.5em;
 }
-header a {
+.headerLinks {
     font-size: 0.8em;
 }
 }
 
 @media(max-width: 480px) {
-header img {
+.headerImg {
     width: 7em;
 }
 
-header ul li {
+.headerListItens {
     padding: none;
     border-radius: none
 }
 
-header ul li:hover {
+.headerListItens:hover {
     box-shadow: none;
     animation: none;
 }
-header a {
+.headerLinks {
     font-size: 0.6em;
 }
 
