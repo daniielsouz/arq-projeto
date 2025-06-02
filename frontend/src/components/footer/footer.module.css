@@ -1,0 +1,41 @@
+footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1em 0;
+
+  text-align: center;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.imgFooter {
+  width: 3.5em;
+  transition: 0.3s ease-in-out;
+}
+
+.imgFooter:hover {
+  transform: translateY(-0.4em);
+}
+
+@media(max-width: 480px) {
+  .imgFooter {
+    width: 3em;
+  }
+
+  footer p {
+    font-size: 0.9em;
+  }
+}

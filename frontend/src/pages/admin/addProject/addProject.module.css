@@ -1,0 +1,53 @@
+.admContainer {
+  display: flex;
+  min-height: 50vh;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admTitle {
+  font-weight: bold;
+  margin-bottom: 50px;
+}
+
+.admContainer form {
+  text-align: center;
+}
+
+.admContainer form div {
+  margin: 15px 0;
+  text-align: start;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.nameLabel,
+.fileLabel {
+  padding: 10px 20px;
+}
+
+.fileLabel {
+  display: inline-block;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 5px;
+}
+
+.fileLabel:hover {
+  background-color: var(--text-color);
+  color: var(--background-color);
+}
+
+.selectedFile {
+  margin: 8px 0 0 20px;
+  font-size: 0.9rem;
+  color: #555;
+}

@@ -1,0 +1,40 @@
+.erro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  font-size: 25px;
+  gap: 20px;
+}
+.erro div{
+    display: flex;
+    gap: 5px;
+}
+.erro span {
+  position: relative;
+  display: inline-block;
+  animation: animate 1.5s ease-in-out infinite;
+}
+
+.erro span:hover{
+    transform: scale(1.1);
+}
+
+.erro span:nth-child(2) {
+    animation-delay: 0.75s;
+}
+.erro span:nth-child(3) {
+    animation-delay: 0.50s;
+}
+
+@keyframes animate {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  }
+  
+

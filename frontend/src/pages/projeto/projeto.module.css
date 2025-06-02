@@ -1,0 +1,109 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 1em;
+  text-transform: uppercase;
+}
+
+.containerImg {
+  column-count: 3;
+  column-gap: 20px;
+  padding: 2em;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  min-height: 300px;
+}
+
+.img {
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: 55px 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  border: solid 3px var(--text-color);
+  display: inline-block;
+}
+
+.img:hover {
+  transform: scale(1.05);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.modalImage {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- Responsividade ---------- */
+
+/* Tablets e telas médias */
+@media (max-width: 768px) {
+  .title {
+    font-size: 20px;
+    margin: 0.8em;
+  }
+
+  .containerImg {
+    column-count: 2;
+    column-gap: 16px;
+    padding: 1.5em;
+  }
+
+  .img {
+    border-radius: 40px 15px;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 18px;
+    margin: 0.6em;
+  }
+
+  .containerImg {
+    column-count: 1;
+    column-gap: 12px;
+    padding: 1em;
+  }
+
+  .img {
+    border-radius: 30px 10px;
+    margin-bottom: 15px;
+  }
+
+  .modalImage {
+    max-width: 95%;
+    max-height: 80%;
+  }
+  
+}
