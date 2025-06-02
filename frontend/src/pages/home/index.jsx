@@ -13,7 +13,7 @@ function Home() {
   useEffect(() => {
     async function fetchProjects() {
       try {
-        const response = await fetch('http://localhost:5000/');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}`);
         if (!response.ok) {
           throw new Error('Erro ao buscar projetos');
         }

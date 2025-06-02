@@ -10,7 +10,7 @@ export default function Projeto() {
   const [selectedImage, setSelectedImage] = useState(null); 
 
   useEffect(() => {
-    fetch(`http://localhost:5000/project/${id}`)
+    fetch(`${import.meta.env.VITE_API_URL}/project/${id}`)
       .then(res => res.json())
       .then(data => setProject(data))
       .catch(err => console.error("Erro ao buscar projeto:", err));

@@ -18,7 +18,7 @@ function Adm() {
   const imageFiles = galeryFiles.length > 1 ? 'imagens selecionadas' : 'imagem selecionada';
 
   useEffect(() => {
-    fetch("http://localhost:5000/portifolio")
+    fetch(`${import.meta.env.VITE_API_URL}/portifolio`)
       .then(res => res.json())
       .then(data => setProjects(data))
       .catch(err => console.error("Erro ao buscar projetos:", err));
@@ -44,7 +44,7 @@ function Adm() {
 
   function handleDelete(id) {
     setIsDeleting(true);
-    fetch(`http://localhost:5000/portifolio/${id}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/portifolio/${id}`, {
       method: 'DELETE',
     })
       .then(res => {
@@ -65,7 +65,7 @@ function Adm() {
 
   function handleDeleteImage(projectId, imageUrl) {
     const encodedUrl = encodeURIComponent(imageUrl);
-    fetch(`http://localhost:5000/portifolio/${projectId}/imagem?imageUrl=${encodedUrl}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/portifolio/${projectId}/imagem?imageUrl=${encodedUrl}`, {
       method: 'DELETE',
     })
       .then(res => {
@@ -94,7 +94,7 @@ function Adm() {
     const formData = new FormData();
     galeryFiles.forEach(file => formData.append('galeryImg', file));
 
-    fetch(`http://localhost:5000/portifolio/${selectedProject._id}/imagens`, {
+    fetch(`${import.meta.env.VITE_API_URL}/portifolio/${selectedProject._id}/imagens`, {
       method: 'POST',
       body: formData,
     })
@@ -120,7 +120,7 @@ function Adm() {
       return;
     }
 
-    fetch(`http://localhost:5000/portifolio/${selectedProject._id}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/portifolio/${selectedProject._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

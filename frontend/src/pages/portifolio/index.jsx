@@ -15,7 +15,7 @@ export default function Portifolio() {
   const galleryRef = useRef(null); 
 
   useEffect(() => {
-    fetch("http://localhost:5000/portifolio")
+    fetch(`${import.meta.env.VITE_API_URL}/portifolio`)
       .then((res) => res.json())
       .then((data) => {
         setProjects(data);
