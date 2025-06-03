@@ -3,7 +3,7 @@ import style from './toast.module.css';
 
 function Toast({ message, type = 'info', onClose }) {
   useEffect(() => {
-    if (!onClose) return; // se onClose não foi passado, não faz nada
+    if (!onClose) return; 
 
     const timer = setTimeout(() => {
       onClose();

@@ -35,7 +35,7 @@ function Footer() {
           </a>
         </div>
       </div>
-      <p>&copy; {new Date().getFullYear()} Arq-Janaina Possamai. Todos os direitos reservados.</p>
+      <p className={style.footerText}>&copy; {new Date().getFullYear()} Arq-Janaina Possamai. Todos os direitos reservados.</p>
     </footer>
   );
 }

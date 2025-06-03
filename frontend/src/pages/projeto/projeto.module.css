@@ -63,9 +63,6 @@
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
-/* ---------- Responsividade ---------- */
-
-/* Tablets e telas médias */
 @media (max-width: 768px) {
   .title {
     font-size: 20px;
@@ -82,7 +79,6 @@
     border-radius: 40px 15px;
   }
 }
-
 
 @media (max-width: 480px) {
   .title {
