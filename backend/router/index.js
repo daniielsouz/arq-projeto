@@ -5,7 +5,8 @@ const cloudinary = require('cloudinary').v2;
 const { ObjectId } = require('mongodb');
 const router = express.Router();
 const db = require('../db.js');
-const authMiddleware = require('../middleware/authMiddleware');
+const auth = require('../middleware/authMiddleware.js')
+
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -36,7 +37,17 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get(['/portifolio', '/adm'], async (req, res) => {
+router.get('/adm', auth, async (req, res) => {
+  try {
+    const projetos = await db.find();
+    res.json(projetos);
+  } catch (error) {
+    console.error('Erro ao buscar todos projetos:', error);
+    res.status(500).send('Erro ao buscar projetos');
+  }
+});
+
+router.get('/portifolio', async (req, res) => {
   try {
     const projetos = await db.find();
     res.json(projetos);
@@ -59,7 +70,7 @@ router.get('/project/:id', async (req, res) => {
 
 router.post(
   '/saveProject',
-  authMiddleware,
+  auth,
   upload.fields([
     { name: 'coverImg', maxCount: 1 },
     { name: 'galeryImg', maxCount: 20 },
@@ -96,10 +107,11 @@ router.post(
   }
 );
 
-router.delete('/portifolio/:id', authMiddleware, async (req, res) => {
+router.delete('/portifolio/:id', auth, async (req, res) => {
   try {
     const id = req.params.id;
     const dbConn = await db.connect();
+
     
     const projeto = await dbConn.collection('projetos').findOne({ _id: new ObjectId(id) });
 
@@ -107,6 +119,7 @@ router.delete('/portifolio/:id', authMiddleware, async (req, res) => {
       return res.status(404).json({ message: 'Projeto não encontrado para deletar' });
     }
 
+  
     if (projeto.coverImg?.public_id) {
       await cloudinary.uploader.destroy(projeto.coverImg.public_id);
     }
@@ -119,7 +132,7 @@ router.delete('/portifolio/:id', authMiddleware, async (req, res) => {
       }
     }
 
-    const result = await dbConn.collection('projetos').deleteOne({ _id: new ObjectId(id) });
+    const result = await db.removeProject(id);
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ message: 'Projeto não encontrado para deletar' });
@@ -132,7 +145,8 @@ router.delete('/portifolio/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.put('/portifolio/:id', authMiddleware, async (req, res) => {
+
+router.put('/portifolio/:id', auth, async (req, res) => {
   try {
     const { nameProject } = req.body;
     const id = req.params.id;
@@ -160,7 +174,7 @@ router.put('/portifolio/:id', authMiddleware, async (req, res) => {
 
 router.post(
   '/portifolio/:projectId/imagens',
-  authMiddleware,
+  auth,
   upload.array('galeryImg', 20),
   async (req, res) => {
     try {
@@ -189,7 +203,7 @@ router.post(
   }
 );
 
-router.delete('/portifolio/:projectId/imagem', authMiddleware, async (req, res) => {
+router.delete('/portifolio/:projectId/imagem', auth, async (req, res) => {
   try {
     const projectId = req.params.projectId;
     const imageUrl = req.query.imageUrl;

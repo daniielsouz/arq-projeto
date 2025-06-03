@@ -38,7 +38,7 @@ export default function Adm() {
   async function handleSubmit(e) {
     e.preventDefault();
     setIsSubmitting(true);
-
+   
     try {
       const data = new FormData();
       data.append('nameProject', formData.nameProject);
@@ -46,7 +46,7 @@ export default function Adm() {
       formData.galeryImg.forEach(file => data.append('galeryImg', file));
 
       const token = localStorage.getItem('token');
-
+       console.log('Token:', token);
       const response = await fetch(`${import.meta.env.VITE_API_URL}/saveProject`, {
         method: 'POST',
         headers: {

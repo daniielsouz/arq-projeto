@@ -21,8 +21,14 @@ function Adm() {
     fetch(`${import.meta.env.VITE_API_URL}/portifolio`)
       .then(res => res.json())
       .then(data => setProjects(data))
-      .catch(err => console.error("Erro ao buscar projetos:", err));
+      .catch(err => {
+        console.error("Erro ao buscar projetos:", err);
+      });
   }, []);
+
+  useEffect(() => {
+    console.log('selectedProject mudou:', selectedProject);
+  }, [selectedProject]);
 
   function showToast(message, type = 'info') {
     setToast({ message, type, key: Date.now() });
@@ -32,55 +38,72 @@ function Adm() {
     const projectId = event.target.value;
     const selected = projetos.find(i => i._id === projectId);
     setSelectedProject(selected);
-    setEditedName(selected.nameProject);
+    setEditedName(selected?.nameProject || '');
   }
+
   useEffect(() => {
-  if (selectedProject) {
-    setEditedName(selectedProject.nameProject);
-    setGaleryFiles([]);
-    setIsEditingName(false);
-  }
-}, [selectedProject]);
+    if (selectedProject) {
+      setEditedName(selectedProject.nameProject);
+      setGaleryFiles([]);
+      setIsEditingName(false);
+    }
+  }, [selectedProject]);
 
   function handleDelete(id) {
     setIsDeleting(true);
-    fetch(`${import.meta.env.VITE_API_URL}/portifolio/${id}`, {
-      method: 'DELETE',
-    })
+    const token = localStorage.getItem('token');
+  fetch(`${import.meta.env.VITE_API_URL}/portifolio/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`, 
+    },
+  })
       .then(res => {
-        if (!res.ok) throw new Error('Erro ao deletar');
+        if (!res.ok) {
+          console.error('Erro na resposta do delete:', res);
+          throw new Error('Erro ao deletar');
+        }
         return res.json();
       })
       .then(data => {
         setProjects(prev => prev.filter(proj => proj._id !== id));
-        setSelectedProject('');
+        setSelectedProject(null);
         showToast(data.message, 'success');
       })
       .catch(err => {
-        console.error(err);
+        console.error('Erro ao executar handleDelete:', err);
         showToast('Erro ao excluir projeto', 'error');
       })
       .finally(() => setIsDeleting(false));
   }
 
   function handleDeleteImage(projectId, imageUrl) {
+    const token = localStorage.getItem('token');
     const encodedUrl = encodeURIComponent(imageUrl);
     fetch(`${import.meta.env.VITE_API_URL}/portifolio/${projectId}/imagem?imageUrl=${encodedUrl}`, {
       method: 'DELETE',
+      headers: {
+      'Authorization': `Bearer ${token}`, 
+    },
     })
       .then(res => {
-        if (!res.ok) throw new Error('Erro ao apagar imagem');
+        if (!res.ok) {
+          console.error('Erro na resposta do delete imagem:', res);
+          throw new Error('Erro ao apagar imagem');
+        }
         return res.json();
       })
       .then(data => {
         showToast(data.message, 'success');
         setSelectedProject(prev => ({
           ...prev,
-          galeryImg: prev.galeryImg.filter(img => img.url !== imageUrl),
+          galeryImg: Array.isArray(prev?.galeryImg)
+            ? prev.galeryImg.filter(img => img.url !== imageUrl)
+            : [],
         }));
       })
       .catch(err => {
-        console.error(err);
+        console.error('Erro ao executar handleDeleteImage:', err);
         showToast('Erro ao excluir imagem', 'error');
       });
   }
@@ -93,9 +116,12 @@ function Adm() {
 
     const formData = new FormData();
     galeryFiles.forEach(file => formData.append('galeryImg', file));
-
+    const token = localStorage.getItem('token');
     fetch(`${import.meta.env.VITE_API_URL}/portifolio/${selectedProject._id}/imagens`, {
       method: 'POST',
+          headers: {
+      'Authorization': `Bearer ${token}`  
+    },
       body: formData,
     })
       .then(res => res.json())
@@ -110,6 +136,7 @@ function Adm() {
   }
 
   function handleEditName() {
+    
     if (!editedName.trim()) {
       showToast('Nome inválido.', 'error');
       return;
@@ -119,16 +146,20 @@ function Adm() {
       setIsEditingName(false);
       return;
     }
-
+    const token = localStorage.getItem('token');
     fetch(`${import.meta.env.VITE_API_URL}/portifolio/${selectedProject._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({ nameProject: editedName }),
     })
       .then(res => {
-        if (!res.ok) throw new Error('Erro ao editar nome');
+        if (!res.ok) {
+          console.error('Erro na resposta do edit name:', res);
+          throw new Error('Erro ao editar nome');
+        }
         return res.json();
       })
       .then(data => {
@@ -142,7 +173,7 @@ function Adm() {
         setIsEditingName(false);
       })
       .catch(err => {
-        console.error(err);
+        console.error('Erro ao editar nome:', err);
         showToast('Erro ao editar nome', 'error');
       });
   }
@@ -257,36 +288,47 @@ function Adm() {
 
           <div className={style.divItens}>
             <AnimatePresence>
-              {selectedProject.galeryImg.map((url, index) => (
-                <AnimatedPage key={`${selectedProject._id}-${index}`}>
-                  <div className={style.divImg}>
-                    <img
-                      className={style.imgCustom}
-                      src={url.url}
-                      alt={`Imagem ${index}`}
-                    />
-                    {selectedProject.galeryImg.length === 1 ? (
-                      <img
-                        onClick={() => !isDeleting && handleDelete(selectedProject._id)}
-                        className={style.icon}
-                        src="/img/delete.svg"
-                        alt="Deletar"
-                        title="Deletar projeto"
-                      />
-                    ) : (
-                      <img
-                        onClick={() =>
-                          handleDeleteImage(selectedProject._id, url.url)
-                        }
-                        className={style.icon}
-                        src="/img/delete.svg"
-                        alt="Deletar"
-                        title={`Deletar imagem ${index + 1}`}
-                      />
-                    )}
-                  </div>
-                </AnimatedPage>
-              ))}
+              {(() => {
+                try {
+                  if (!Array.isArray(selectedProject.galeryImg)) {
+                    console.error('galeryImg não é um array:', selectedProject.galeryImg);
+                    return null;
+                  }
+                  return selectedProject.galeryImg.map((url, index) => (
+                    <AnimatedPage key={`${selectedProject._id}-${index}`}>
+                      <div className={style.divImg}>
+                        <img
+                          className={style.imgCustom}
+                          src={url.url}
+                          alt={`Imagem ${index}`}
+                        />
+                        {selectedProject.galeryImg.length === 1 ? (
+                          <img
+                            onClick={() => !isDeleting && handleDelete(selectedProject._id)}
+                            className={style.icon}
+                            src="/img/delete.svg"
+                            alt="Deletar"
+                            title="Deletar projeto"
+                          />
+                        ) : (
+                          <img
+                            onClick={() =>
+                              handleDeleteImage(selectedProject._id, url.url)
+                            }
+                            className={style.icon}
+                            src="/img/delete.svg"
+                            alt="Deletar"
+                            title={`Deletar imagem ${index + 1}`}
+                          />
+                        )}
+                      </div>
+                    </AnimatedPage>
+                  ));
+                } catch (error) {
+                  console.error('Erro no map das imagens:', error);
+                  return null;
+                }
+              })()}
             </AnimatePresence>
           </div>
         </div>
