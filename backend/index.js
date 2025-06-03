@@ -7,11 +7,15 @@ const app = express();
 const projectRoutes = require('./router');
 const authRoutes = require('./router/auth'); 
 
-const allowedOrigins = ['https://arq-projeto.vercel.app', 'http://localhost:5173'];
-
+const allowedOrigins = [
+  'https://arq-projeto.vercel.app', 
+  'https://arqjanainapossamai.vercel.app', 
+  'https://arqjanainapossamai-git-main-daniel-de-souzas-projects.vercel.app', 
+  'http://localhost:5173'
+];
 const corsOptions = {
   origin: function(origin, callback) {
-    if (!origin) return callback(null, true); // permite ferramentas como Postman
+    if (!origin) return callback(null, true); 
     if (allowedOrigins.indexOf(origin) === -1) {
       const msg = 'O CORS não permite essa origem.';
       return callback(new Error(msg), false);
