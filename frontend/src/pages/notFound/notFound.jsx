@@ -7,13 +7,13 @@ export default function NotFound() {
     <AnimatedPage>
     <PageTitle title="Página Não Encontrada - Janaina Possamai" />
     <div className={style.erro}>
-      <div>
+      <div className={style.erroDiv}>
         <h1>Página Não Encontrada</h1>
-        <span className={style.animacao}>!</span>
-        <span className={style.animacao}>!</span>
-        <span className={style.animacao}>!</span>
+        <span className={style.erroSpan}>!</span>
+        <span className={style.erroSpan}>!</span>
+        <span className={style.erroSpan}>!</span>
       </div>
-      <p>Desculpe, mas a página que você está procurando não existe ou foi removida. Talvez ela ainda esteja em construção.</p>
+      <p>Desculpe, mas a página que você está procurando não existe ou foi removida.</p>
     </div>
     </AnimatedPage>
   );
