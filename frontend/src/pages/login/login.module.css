@@ -1,19 +1,37 @@
-.loginContainer{
-    display: flex;
-    min-height: 50vh;
-    flex-direction: column ;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    text-align: center;
-    transition: ease-in-out 0.3s;
-
+.loginContainer {
+  display: flex;
+  min-height: 50vh;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  text-align: center;
+  transition: ease-in-out 0.3s;
 }
 
 .loginContainer input {
-    margin: 10px;  
+  margin: 10px;
 }
 
+.passwordVisibility {
+  position: relative;
+}
 
+.buttonVisibility {
+  position: absolute;
+  right: -1.5em;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-
+.imgVisibility {
+}

@@ -124,8 +124,10 @@ function Adm() {
       .then(res => res.json())
       .then(data => {
         showToast(data.message, 'success');
-        window.location.reload();
-      })
+          setTimeout(() => {
+    window.location.reload();
+  }, 1000); 
+})
       .catch(err => {
         console.error("Erro ao enviar imagens:", err);
         showToast("Erro ao enviar imagens.", 'error');

@@ -25,6 +25,7 @@ function AnimatedRoutes() {
         <Route path="/Portifolio" element={<Portifolio />} />
         <Route path="/login" element={<Login />} />
         <Route path="/portifolio/:id" element={<Projeto />} />
+        <Route path="/portifolio/notfound" element={<NotFound />} />
         <Route path="/Adm" element={
           <PrivateRoute>
             <Adm />

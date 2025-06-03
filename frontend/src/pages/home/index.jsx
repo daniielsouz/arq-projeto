@@ -9,6 +9,7 @@ import ImgHome from './img/imgHome.png'
 
 function Home() {
   const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchProjects() {
@@ -19,8 +20,10 @@ function Home() {
         }
         const data = await response.json();
         setProjects(data);
+        setLoading (false);
       } catch (error) {
         console.error('Erro ao buscar projetos:', error);
+        setLoading(false);
       }
     }
     fetchProjects();
@@ -74,28 +77,37 @@ function Home() {
         </div>
         <span className={style.cardText}>E tudo o que você precisar para o seu projeto.</span>
       </section>
-  <section className={`${styleProject.portfolioSection} globalSection`}>
-    <h1 className="globalTitleSection">Últimos Projetos</h1>
-    {projects.length === 0 ? (
-    <p className={style.homeMessage}>Infelizmente ainda não temos nenhum projeto cadastrado.</p>
-      ) : (
-    <div className={style.containerLastProject}>
-      {projects.map((project) => (
-        <div key={project._id} className={`${styleProject.portfolioCard} ${style.homeCard}`}>
-          <Link to={`/portifolio/${project._id}`}>
-            <img
-              className={` ${styleProject.portfolioImg} ${style.homeCardImg}`}
-              src={project.coverImg.url}
-              alt={project.nameProject}
-            />
-            <div className={styleProject.overlay}></div>
-          </Link>
-          <h2 className={styleProject.portfolioName}>{project.nameProject}</h2>
-        </div>
-      ))}
-    </div>
-  
-)}</section>
+<section className={`${styleProject.portfolioSection} globalSection`}>
+  <h1 className="globalTitleSection">Últimos Projetos</h1>
+
+  {!loading ? (
+    projects.length === 0 ? (
+      <p className={style.homeMessage}>
+        Infelizmente ainda não temos nenhum projeto cadastrado.
+      </p>
+    ) : (
+      <div className={style.containerLastProject}>
+        {projects.map((project) => (
+          <div key={project._id} className={`${styleProject.portfolioCard} ${style.homeCard}`}>
+            <Link to={`/portifolio/${project._id}`}>
+              <img
+                className={`${styleProject.portfolioImg} ${style.homeCardImg}`}
+                src={project.coverImg.url}
+                alt={project.nameProject}
+              />
+              <div className={styleProject.overlay}></div>
+            </Link>
+            <h2 className={styleProject.portfolioName}>{project.nameProject}</h2>
+          </div>
+        ))}
+      </div>
+    )
+  ) : (
+    <AnimatedPage>
+      <p className={style.portfolioMessage}>Carregando projetos...</p>
+    </AnimatedPage>
+  )}
+</section>
 
     </AnimatedPage>
   );

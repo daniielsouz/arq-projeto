@@ -15,11 +15,9 @@
   pointer-events: none;
 }
 
-.info {
-  background-color: #3498db;
-}
 
-.success {
+
+.success,.info {
   background-color: var(--text-nav-color);
 }
 

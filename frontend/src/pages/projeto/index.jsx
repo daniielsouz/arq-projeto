@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AnimatedPage from "../../components/AnimatedPage";
 import style from "./projeto.module.css";
@@ -6,15 +6,27 @@ import PageTitle from "../../components/PageTitle";
 
 export default function Projeto() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(null); 
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/project/${id}`)
-      .then(res => res.json())
-      .then(data => setProject(data))
-      .catch(err => console.error("Erro ao buscar projeto:", err));
-  }, [id]);
+      .then(res => {
+        if (!res.ok) throw new Error("Projeto não encontrado");
+        return res.json();
+      })
+      .then(data => {
+        if (!data || !data.nameProject) throw new Error("Projeto inválido");
+        setProject(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Erro ao buscar projeto:", err);
+        navigate("/portifolio/notfound", { replace: true });
+      });
+  }, [id, navigate]);
 
   const handleImageClick = (imageSrc) => {
     setSelectedImage(imageSrc);
@@ -24,7 +36,7 @@ export default function Projeto() {
     setSelectedImage(null);
   };
 
-  if (!project) return <p className={style.loading}>Carregando...</p>;
+  if (loading) return <p className={style.loading}>Carregando...</p>;
 
   return (
     <AnimatedPage>

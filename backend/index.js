@@ -8,9 +8,8 @@ const projectRoutes = require('./router');
 const authRoutes = require('./router/auth'); 
 
 const allowedOrigins = [
-  'https://arq-projeto.vercel.app', 
-  'https://arqjanainapossamai.vercel.app', 
-  'https://arqjanainapossamai-git-main-daniel-de-souzas-projects.vercel.app', 
+  'https://arqjanainapossamai.vercel.app',  // seu domínio novo (exemplo)
+  'https://arqjanainapossamai-git-main-daniel-de-souzas-projects.vercel.app', // domínio temporário Vercel
   'http://localhost:5173'
 ];
 const corsOptions = {
