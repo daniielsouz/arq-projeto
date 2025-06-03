@@ -7,7 +7,7 @@ router.post('/login', (req, res) => {
   const { login, senha } = req.body; 
 
   if (login === process.env.LOGIN && senha === process.env.PASSWORD) {
-    const token = jwt.sign({ login }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ login }, process.env.JWT_SECRET);
     return res.json({ token });
   }
 
