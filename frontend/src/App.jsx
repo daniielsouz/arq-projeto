@@ -12,7 +12,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import { AnimatePresence } from "framer-motion";
 import PrivateRoute from './components/PrivateRoute.jsx';
 import { HelmetProvider } from 'react-helmet-async';
-import Header from './components/header'; // descomentado
+import Header from './components/header'; 
 
 function AnimatedRoutes() {
   const location = useLocation();
