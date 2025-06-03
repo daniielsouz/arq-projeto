@@ -26,9 +26,6 @@ function Adm() {
       });
   }, []);
 
-  useEffect(() => {
-    console.log('selectedProject mudou:', selectedProject);
-  }, [selectedProject]);
 
   function showToast(message, type = 'info') {
     setToast({ message, type, key: Date.now() });
