@@ -56,11 +56,42 @@
   cursor: pointer;
 }
 
+.navegationImg {
+  position: fixed;
+  bottom: 10%;
+  font-size: 3em;
+  background: none;
+  border: none;
+  color: #fff;
+  opacity: 0.3;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  z-index: 1001;
+}
+
+.navegationImg:hover {
+  opacity: 1;
+}
+
+.navegationImg:focus {
+  transform: scale(0.95);
+}
+
+.navegationImg:first-child {
+  left: 2%;
+}
+
+.navegationImg:last-child {
+  right: 2%;
+}
+
+
 .modalImage {
   max-width: 90%;
   max-height: 90%;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  
 }
 
 @media (max-width: 768px) {
