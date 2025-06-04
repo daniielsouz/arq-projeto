@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import Home from './pages/home';
 import About from './pages/about';
 import Footer from './components/footer';
@@ -12,7 +13,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import { AnimatePresence } from "framer-motion";
 import PrivateRoute from './components/PrivateRoute.jsx';
 import { HelmetProvider } from 'react-helmet-async';
-import Header from './components/header'; 
+import Header from './components/header';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -43,6 +44,20 @@ function AnimatedRoutes() {
 }
 
 export default function App() {
+  useEffect(() => {
+    function handleContextMenu(e) {
+      if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+      }
+    }
+
+    document.addEventListener('contextmenu', handleContextMenu);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+    };
+  }, []);
+
   return (
     <HelmetProvider>
       <Router>
