@@ -60,7 +60,7 @@ export default function Projeto() {
     }
   }, [selectedIndex, handlePrev, handleNext, handleCloseModal]);
 
-  // Touch events para dispositivos móveis
+
   const handleTouchStart = (e) => {
     touchStartX.current = e.changedTouches[0].clientX;
   };
@@ -73,8 +73,8 @@ export default function Projeto() {
   const handleSwipeGesture = () => {
     if (touchStartX.current !== null && touchEndX.current !== null) {
       const delta = touchStartX.current - touchEndX.current;
-      if (delta > 50) handleNext(); // swipe para a esquerda
-      else if (delta < -50) handlePrev(); // swipe para a direita
+      if (delta > 50) handleNext(); 
+      else if (delta < -50) handlePrev(); 
     }
   };
 
