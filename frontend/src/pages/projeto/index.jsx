@@ -16,16 +16,16 @@ export default function Projeto() {
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/project/${id}`)
-      .then(res => {
+      .then((res) => {
         if (!res.ok) throw new Error("Projeto não encontrado");
         return res.json();
       })
-      .then(data => {
+      .then((data) => {
         if (!data || !data.nameProject) throw new Error("Projeto inválido");
         setProject(data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Erro ao buscar projeto:", err);
         navigate("/portifolio/notfound", { replace: true });
       });
@@ -36,13 +36,13 @@ export default function Projeto() {
   }, []);
 
   const handlePrev = useCallback(() => {
-    setSelectedIndex(prev =>
+    setSelectedIndex((prev) =>
       prev === 0 ? project.galeryImg.length - 1 : prev - 1
     );
   }, [project]);
 
   const handleNext = useCallback(() => {
-    setSelectedIndex(prev =>
+    setSelectedIndex((prev) =>
       prev === project.galeryImg.length - 1 ? 0 : prev + 1
     );
   }, [project]);
@@ -60,7 +60,6 @@ export default function Projeto() {
     }
   }, [selectedIndex, handlePrev, handleNext, handleCloseModal]);
 
-
   const handleTouchStart = (e) => {
     touchStartX.current = e.changedTouches[0].clientX;
   };
@@ -73,8 +72,8 @@ export default function Projeto() {
   const handleSwipeGesture = () => {
     if (touchStartX.current !== null && touchEndX.current !== null) {
       const delta = touchStartX.current - touchEndX.current;
-      if (delta > 50) handleNext(); 
-      else if (delta < -50) handlePrev(); 
+      if (delta > 50) handleNext();
+      else if (delta < -50) handlePrev();
     }
   };
 
@@ -92,6 +91,7 @@ export default function Projeto() {
       <PageTitle title={`${project.nameProject} - Janaina Possamai`} />
       <div className={style.container}>
         <h1 className={style.title}>{project.nameProject}</h1>
+        <h2 className={style.description}>{project.description}</h2>
         <div className={style.containerImg}>
           {project?.galeryImg?.map((img, i) => (
             <div className={style.imageWrapper} key={i}>
@@ -116,14 +116,26 @@ export default function Projeto() {
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-          <button className={style.navegationImg} onClick={(e) => { e.stopPropagation(); handlePrev(); }}>{`<`}</button>
+          <button
+            className={style.navegationImg}
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePrev();
+            }}
+          >{`<`}</button>
           <img
             src={selectedImage.url}
             alt="Imagem Ampliada"
             className={style.modalImage}
             onClick={(e) => e.stopPropagation()}
           />
-          <button className={style.navegationImg} onClick={(e) => { e.stopPropagation(); handleNext(); }}>{`>`}</button>
+          <button
+            className={style.navegationImg}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleNext();
+            }}
+          >{`>`}</button>
         </div>
       )}
     </AnimatedPage>

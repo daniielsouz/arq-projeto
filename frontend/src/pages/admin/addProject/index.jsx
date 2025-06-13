@@ -1,23 +1,24 @@
-import { useState } from 'react';
-import style from './addProject.module.css';
-import styleAdm from '../adm.module.css';
-import AnimatedPage from '../../../components/AnimatedPage';
-import PageTitle from '../../../components/PageTitle';
-import LoadingOverlay from '../../../components/loading/LoadingOverlay';
-import Toast from '../../../components/toast/Toast';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import style from "./addProject.module.css";
+import styleAdm from "../adm.module.css";
+import AnimatedPage from "../../../components/AnimatedPage";
+import PageTitle from "../../../components/PageTitle";
+import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import Toast from "../../../components/toast/Toast";
+import { Link } from "react-router-dom";
 
 export default function Adm() {
-  const [toast, setToast] = useState({ message: '', type: 'info', key: 0 });
+  const [toast, setToast] = useState({ message: "", type: "info", key: 0 });
   const [formData, setFormData] = useState({
-    nameProject: '',
+    nameProject: "",
+    description: "",
     coverImg: null,
-    galeryImg: []
+    galeryImg: [],
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function showToast(message, type = 'info') {
+  function showToast(message, type = "info") {
     setToast({ message, type, key: Date.now() });
   }
 
@@ -25,49 +26,56 @@ export default function Adm() {
     const { name, value, files } = e.target;
 
     if (files) {
-      if (name === 'coverImg') {
-        setFormData(prev => ({ ...prev, coverImg: files[0] }));
-      } else if (name === 'galeryImg') {
-        setFormData(prev => ({ ...prev, galeryImg: Array.from(files) }));
+      if (name === "coverImg") {
+        setFormData((prev) => ({ ...prev, coverImg: files[0] }));
+      } else if (name === "galeryImg") {
+        setFormData((prev) => ({ ...prev, galeryImg: Array.from(files) }));
       }
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setIsSubmitting(true);
-   
+
     try {
       const data = new FormData();
-      data.append('nameProject', formData.nameProject);
-      if (formData.coverImg) data.append('coverImg', formData.coverImg);
-      formData.galeryImg.forEach(file => data.append('galeryImg', file));
+      data.append("nameProject", formData.nameProject);
+      data.append("description", formData.description);
+      if (formData.coverImg) data.append("coverImg", formData.coverImg);
+      formData.galeryImg.forEach((file) => data.append("galeryImg", file));
 
-      const token = localStorage.getItem('token');
-       console.log('Token:', token);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/saveProject`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: data
-      });
+      const token = localStorage.getItem("token");
+      console.log("Token:", token);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/saveProject`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: data,
+        }
+      );
 
       const result = await response.json();
 
       if (response.ok) {
-        showToast(result.message || 'Projeto adicionado com sucesso!', 'success');
+        showToast(
+          result.message || "Projeto adicionado com sucesso!",
+          "success"
+        );
         setTimeout(() => {
           window.location.reload();
         }, 1500);
       } else {
-        throw new Error(result.message || 'Erro ao adicionar projeto');
+        throw new Error(result.message || "Erro ao adicionar projeto");
       }
     } catch (err) {
       console.error(err);
-      showToast(err.message || 'Erro ao adicionar projeto', 'error');
+      showToast(err.message || "Erro ao adicionar projeto", "error");
       setIsSubmitting(false);
     }
   }
@@ -82,12 +90,28 @@ export default function Adm() {
         <h2 className={style.admTitle}>Adicionar Projetos</h2>
         <form onSubmit={handleSubmit} encType="multipart/form-data">
           <div>
-            <label className={style.nameLabel}>Nome do projeto: </label>
+            <label htmlFor="name" className={style.nameLabel}>
+              Nome do projeto:{" "}
+            </label>
             <input
+              id="name"
+              autoFocus
               className="globalInput"
               type="text"
               name="nameProject"
               value={formData.nameProject}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="description">Descrição do projeto: </label>
+            <textarea
+              className="globalInput"
+              name="description"
+              id="description"
+              rows={4}
+              value={formData.description}
               onChange={handleChange}
               required
             />
@@ -132,13 +156,22 @@ export default function Adm() {
             )}
           </div>
 
-          <button className="globalButton" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Adicionando...' : 'Adicionar'}
+          <button
+            className="globalButton"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Adicionando..." : "Adicionar"}
           </button>
         </form>
 
         <Link to="/adm">
-          <img className={styleAdm.icon} src="/img/return.svg" alt="Voltar" title="Voltar" />
+          <img
+            className={styleAdm.icon}
+            src="/img/return.svg"
+            alt="Voltar"
+            title="Voltar"
+          />
         </Link>
       </div>
     </AnimatedPage>

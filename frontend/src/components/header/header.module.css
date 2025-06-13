@@ -1,88 +1,71 @@
-
 .headerContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 1em 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1em 2em;
 }
 
 .headerImg {
-    width: 15em;
+  width: 15em;
 }
 
 .headerText {
-    font-size: 0.5em;
-    margin: 0.5em;
+  font-size: 0.5em;
+  margin: 0.5em;
 }
 
 .headerList {
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    margin-top: 30px;
-}
-
-.headerListItens {
-    padding: 0.8em 1.6em;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 50% 2.5em;
-}
-
-.headerListItens:hover {
-    transform: scale(1.1); 
-    box-shadow: 0 5px 5px var(--text-nav-color); 
-    animation: border-radius-animation 2s ease-in-out infinite alternate-reverse; 
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 30px;
 }
 
 .headerLinks {
-    font-weight: bold;
-    font-size: 1em;
-    color: var(--text-nav-color);
+  font-weight: bold;
+  font-size: 1em;
+  color: var(--text-nav-color);
 }
-
 
 @keyframes border-radius-animation {
-    0% {
-        border-radius: 50% 2.5em;
-    }
-    100% {
-        border-radius: 2.5em 50%;
-    }
+  0% {
+    border-radius: 50% 2.5em;
+  }
+  100% {
+    border-radius: 2.5em 50%;
+  }
 }
 
-@media(max-width: 768px) {
-.headerImg {
+@media (max-width: 768px) {
+  .headerImg {
     width: 10em;
-}
-.headerListItens {
+  }
+  .headerListItens {
     padding: 0.4em 0.8em;
     border-radius: 50% 2.5em;
-}
-.headerLinks {
+  }
+  .headerLinks {
     font-size: 0.8em;
-}
+  }
 }
 
-@media(max-width: 480px) {
-.headerImg {
+@media (max-width: 480px) {
+  .headerImg {
     width: 7em;
-}
+  }
 
-.headerListItens {
+  .headerListItens {
     padding: none;
-    border-radius: none
-}
+    border-radius: none;
+  }
 
-.headerListItens:hover {
+  .headerListItens:hover {
     box-shadow: none;
     animation: none;
-}
-.headerLinks {
+  }
+  .headerLinks {
     font-size: 0.6em;
+  }
 }
-
-}
-
-

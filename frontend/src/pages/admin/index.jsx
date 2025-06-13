@@ -1,143 +1,161 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import AnimatedPage from '../../components/AnimatedPage';
-import { AnimatePresence } from 'framer-motion';
-import LoadingOverlay from '../../components/loading/LoadingOverlay';
-import Toast from '../../components/toast/Toast.jsx';
-import style from './adm.module.css';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import AnimatedPage from "../../components/AnimatedPage";
+import { AnimatePresence } from "framer-motion";
+import LoadingOverlay from "../../components/loading/LoadingOverlay";
+import Toast from "../../components/toast/Toast.jsx";
+import style from "./adm.module.css";
 
 function Adm() {
   const [projetos, setProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState('');
+  const [selectedProject, setSelectedProject] = useState(null);
   const [galeryFiles, setGaleryFiles] = useState([]);
   const [isEditingName, setIsEditingName] = useState(false);
-  const [editedName, setEditedName] = useState('');
+  const [editedName, setEditedName] = useState("");
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [editedDescription, setEditedDescription] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [toast, setToast] = useState({ message: '', type: 'info', key: 0 });
+  const [toast, setToast] = useState({ message: "", type: "info", key: 0 });
 
-  const imageFiles = galeryFiles.length > 1 ? 'imagens selecionadas' : 'imagem selecionada';
+  const imageFiles =
+    galeryFiles.length > 1 ? "imagens selecionadas" : "imagem selecionada";
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/portifolio`)
-      .then(res => res.json())
-      .then(data => setProjects(data))
-      .catch(err => {
+      .then((res) => res.json())
+      .then((data) => setProjects(data))
+      .catch((err) => {
         console.error("Erro ao buscar projetos:", err);
       });
   }, []);
 
-
-  function showToast(message, type = 'info') {
+  function showToast(message, type = "info") {
     setToast({ message, type, key: Date.now() });
   }
 
   function handleSelect(event) {
     const projectId = event.target.value;
-    const selected = projetos.find(i => i._id === projectId);
+    const selected = projetos.find((i) => i._id === projectId);
     setSelectedProject(selected);
-    setEditedName(selected?.nameProject || '');
+    setEditedName(selected?.nameProject || "");
+    setEditedDescription(selected?.description || "");
+    setIsEditingName(false);
+    setIsEditingDescription(false);
+    setGaleryFiles([]);
   }
 
   useEffect(() => {
     if (selectedProject) {
       setEditedName(selectedProject.nameProject);
+      setEditedDescription(selectedProject.description);
       setGaleryFiles([]);
       setIsEditingName(false);
+      setIsEditingDescription(false);
     }
   }, [selectedProject]);
 
   function handleDelete(id) {
     setIsDeleting(true);
-    const token = localStorage.getItem('token');
-  fetch(`${import.meta.env.VITE_API_URL}/portifolio/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`, 
-    },
-  })
-      .then(res => {
+    const token = localStorage.getItem("token");
+    fetch(`${import.meta.env.VITE_API_URL}/portifolio/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
         if (!res.ok) {
-          console.error('Erro na resposta do delete:', res);
-          throw new Error('Erro ao deletar');
+          console.error("Erro na resposta do delete:", res);
+          throw new Error("Erro ao deletar");
         }
         return res.json();
       })
-      .then(data => {
-        setProjects(prev => prev.filter(proj => proj._id !== id));
+      .then((data) => {
+        setProjects((prev) => prev.filter((proj) => proj._id !== id));
         setSelectedProject(null);
-        showToast(data.message, 'success');
+        showToast(data.message, "success");
       })
-      .catch(err => {
-        console.error('Erro ao executar handleDelete:', err);
-        showToast('Erro ao excluir projeto', 'error');
+      .catch((err) => {
+        console.error("Erro ao executar handleDelete:", err);
+        showToast("Erro ao excluir projeto", "error");
       })
       .finally(() => setIsDeleting(false));
   }
 
   function handleDeleteImage(projectId, imageUrl) {
-    const token = localStorage.getItem('token');
+    showToast("Excluindo imagem...");
+    const token = localStorage.getItem("token");
     const encodedUrl = encodeURIComponent(imageUrl);
-    fetch(`${import.meta.env.VITE_API_URL}/portifolio/${projectId}/imagem?imageUrl=${encodedUrl}`, {
-      method: 'DELETE',
-      headers: {
-      'Authorization': `Bearer ${token}`, 
-    },
-    })
-      .then(res => {
+    fetch(
+      `${
+        import.meta.env.VITE_API_URL
+      }/portifolio/${projectId}/imagem?imageUrl=${encodedUrl}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then((res) => {
         if (!res.ok) {
-          console.error('Erro na resposta do delete imagem:', res);
-          throw new Error('Erro ao apagar imagem');
+          console.error("Erro na resposta do delete imagem:", res);
+          throw new Error("Erro ao apagar imagem");
         }
         return res.json();
       })
-      .then(data => {
-        showToast(data.message, 'success');
-        setSelectedProject(prev => ({
+      .then((data) => {
+        showToast(data.message, "success");
+        setSelectedProject((prev) => ({
           ...prev,
           galeryImg: Array.isArray(prev?.galeryImg)
-            ? prev.galeryImg.filter(img => img.url !== imageUrl)
+            ? prev.galeryImg.filter((img) => img.url !== imageUrl)
             : [],
         }));
       })
-      .catch(err => {
-        console.error('Erro ao executar handleDeleteImage:', err);
-        showToast('Erro ao excluir imagem', 'error');
+      .catch((err) => {
+        console.error("Erro ao executar handleDeleteImage:", err);
+        showToast("Erro ao excluir imagem", "error");
       });
   }
 
   function handleUploadGalery() {
     if (!selectedProject || galeryFiles.length === 0) {
-      showToast('Nenhuma imagem selecionada', 'error');
+      showToast("Nenhuma imagem selecionada", "error");
       return;
     }
 
     const formData = new FormData();
-    galeryFiles.forEach(file => formData.append('galeryImg', file));
-    const token = localStorage.getItem('token');
-    fetch(`${import.meta.env.VITE_API_URL}/portifolio/${selectedProject._id}/imagens`, {
-      method: 'POST',
-          headers: {
-      'Authorization': `Bearer ${token}`  
-    },
-      body: formData,
-    })
-      .then(res => res.json())
-      .then(data => {
-        showToast(data.message, 'success');
-          setTimeout(() => {
-    window.location.reload();
-  }, 1000); 
-})
-      .catch(err => {
+    galeryFiles.forEach((file) => formData.append("galeryImg", file));
+    const token = localStorage.getItem("token");
+    fetch(
+      `${import.meta.env.VITE_API_URL}/portifolio/${
+        selectedProject._id
+      }/imagens`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        showToast(data.message, "success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      })
+      .catch((err) => {
         console.error("Erro ao enviar imagens:", err);
-        showToast("Erro ao enviar imagens.", 'error');
+        showToast("Erro ao enviar imagens.", "error");
       });
   }
 
   function handleEditName() {
-    
     if (!editedName.trim()) {
-      showToast('Nome inválido.', 'error');
+      showToast("Nome inválido.", "error");
       return;
     }
 
@@ -145,41 +163,94 @@ function Adm() {
       setIsEditingName(false);
       return;
     }
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     fetch(`${import.meta.env.VITE_API_URL}/portifolio/${selectedProject._id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ nameProject: editedName }),
     })
-      .then(res => {
+      .then((res) => {
         if (!res.ok) {
-          console.error('Erro na resposta do edit name:', res);
-          throw new Error('Erro ao editar nome');
+          console.error("Erro na resposta do edit name:", res);
+          throw new Error("Erro ao editar nome");
         }
         return res.json();
       })
-      .then(data => {
-        showToast(data.message, 'success');
-        setSelectedProject(prev => ({ ...prev, nameProject: editedName }));
-        setProjects(prev =>
-          prev.map(proj =>
-            proj._id === selectedProject._id ? { ...proj, nameProject: editedName } : proj
+      .then((data) => {
+        showToast(data.message, "success");
+        setSelectedProject((prev) => ({ ...prev, nameProject: editedName }));
+        setProjects((prev) =>
+          prev.map((proj) =>
+            proj._id === selectedProject._id
+              ? { ...proj, nameProject: editedName }
+              : proj
           )
         );
         setIsEditingName(false);
       })
-      .catch(err => {
-        console.error('Erro ao editar nome:', err);
-        showToast('Erro ao editar nome', 'error');
+      .catch((err) => {
+        console.error("Erro ao editar nome:", err);
+        showToast("Erro ao editar nome", "error");
+      });
+  }
+
+  function handleEditDescription() {
+    if (!editedDescription.trim()) {
+      showToast("Descrição inválida", "error");
+      return;
+    }
+
+    if (editedDescription === selectedProject.description) {
+      setIsEditingDescription(false);
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    fetch(
+      `${import.meta.env.VITE_API_URL}/portifolio/${
+        selectedProject._id
+      }/description`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ description: editedDescription }),
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Erro ao editar descrição");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        showToast(
+          data.message || "Descrição atualizada com sucesso",
+          "success"
+        );
+        setSelectedProject((prev) => ({
+          ...prev,
+          description: editedDescription,
+        }));
+        setIsEditingDescription(false);
+      })
+      .catch((err) => {
+        console.error("Erro ao editar descrição:", err);
+        showToast(err.message || "Erro ao editar descrição", "error");
       });
   }
 
   return (
     <section className={`globalSection ${style.sectionAdm}`}>
-      {isDeleting && <LoadingOverlay message={`Excluindo ${selectedProject.nameProject}`} />}
+      {isDeleting && (
+        <LoadingOverlay message={`Excluindo ${selectedProject?.nameProject}`} />
+      )}
       <Toast key={toast.key} message={toast.message} type={toast.type} />
       <h2 className="globalTitleSection">Administrativo</h2>
 
@@ -188,11 +259,15 @@ function Adm() {
           <select
             className="globalInput"
             onChange={handleSelect}
-            value={selectedProject?._id || ''}
+            value={selectedProject?._id || ""}
           >
-            <option disabled value="">Selecione o Projeto</option>
-            {projetos.map(i => (
-              <option key={i._id} value={i._id}>{i.nameProject}</option>
+            <option disabled value="">
+              Selecione o Projeto
+            </option>
+            {projetos.map((i) => (
+              <option key={i._id} value={i._id}>
+                {i.nameProject}
+              </option>
             ))}
           </select>
         </div>
@@ -214,10 +289,10 @@ function Adm() {
             {isEditingName ? (
               <>
                 <input
-                  className='globalInput'
+                  className="globalInput"
                   value={editedName}
                   autoFocus
-                  onChange={e => setEditedName(e.target.value)}
+                  onChange={(e) => setEditedName(e.target.value)}
                 />
                 <img
                   className={style.icon}
@@ -237,7 +312,9 @@ function Adm() {
               </>
             ) : (
               <>
-                <h1 className={style.titleName}>{selectedProject.nameProject}</h1>
+                <h1 className={style.titleName}>
+                  {selectedProject.nameProject}
+                </h1>
                 <img
                   className={style.icon}
                   src="/img/edit.svg"
@@ -254,7 +331,11 @@ function Adm() {
               title="Deletar todo projeto"
             />
             <label htmlFor="addPhoto">
-              <img className={style.icon} src="/img/addPhoto.svg" title="Adicionar Foto" />
+              <img
+                className={style.icon}
+                src="/img/addPhoto.svg"
+                title="Adicionar Foto"
+              />
             </label>
             <input
               hidden
@@ -262,7 +343,7 @@ function Adm() {
               type="file"
               accept="image/*"
               multiple
-              onChange={e => setGaleryFiles([...e.target.files])}
+              onChange={(e) => setGaleryFiles([...e.target.files])}
             />
             {galeryFiles.length > 0 && (
               <>
@@ -285,46 +366,87 @@ function Adm() {
             )}
           </div>
 
+          <div className={style.divDescription}>
+            {isEditingDescription ? (
+              <>
+                <textarea
+                  className="globalInput"
+                  value={editedDescription}
+                  autoFocus
+                  rows={4}
+                  onChange={(e) => setEditedDescription(e.target.value)}
+                />
+                <button onClick={handleEditDescription}>Salvar</button>
+                <button
+                  onClick={() => {
+                    setIsEditingDescription(false);
+                    setEditedDescription(selectedProject.description);
+                  }}
+                >
+                  Cancelar
+                </button>
+              </>
+            ) : (
+              <>
+                <p>{selectedProject.description}</p>
+                <button onClick={() => setIsEditingDescription(true)}>
+                  Editar
+                </button>
+              </>
+            )}
+          </div>
+
           <div className={style.divItens}>
             <AnimatePresence>
               {(() => {
                 try {
                   if (!Array.isArray(selectedProject.galeryImg)) {
-                    console.error('galeryImg não é um array:', selectedProject.galeryImg);
+                    console.error(
+                      "galeryImg não é um array:",
+                      selectedProject.galeryImg
+                    );
                     return null;
                   }
                   return selectedProject.galeryImg.map((url, index) => (
                     <AnimatedPage key={`${selectedProject._id}-${index}`}>
-                      <div className={style.divImg}>
-                        <img
-                          className={style.imgCustom}
-                          src={url.url}
-                          alt={`Imagem ${index}`}
+                      <label htmlFor="delect">
+                        <div className={style.imgWrapper}>
+                          <img
+                            className={style.imgCustom}
+                            src={url.url}
+                            alt={`Imagem ${index}`}
+                          />
+                        </div>
+                      </label>
+                      {selectedProject.galeryImg.length === 1 ? (
+                        <input
+                          hidden
+                          id="delect"
+                          onClick={() =>
+                            !isDeleting && handleDelete(selectedProject._id)
+                          }
+                          className={style.icon}
+                          src="/img/delete.svg"
+                          alt="Deletar"
+                          title="Deletar projeto"
                         />
-                        {selectedProject.galeryImg.length === 1 ? (
-                          <img
-                            onClick={() => !isDeleting && handleDelete(selectedProject._id)}
-                            className={style.icon}
-                            src="/img/delete.svg"
-                            alt="Deletar"
-                            title="Deletar projeto"
-                          />
-                        ) : (
-                          <img
-                            onClick={() =>
-                              handleDeleteImage(selectedProject._id, url.url)
-                            }
-                            className={style.icon}
-                            src="/img/delete.svg"
-                            alt="Deletar"
-                            title={`Deletar imagem ${index + 1}`}
-                          />
-                        )}
-                      </div>
+                      ) : (
+                        <input
+                          hidden
+                          id="delect"
+                          onClick={() =>
+                            handleDeleteImage(selectedProject._id, url.url)
+                          }
+                          className={style.icon}
+                          src="/img/delete.svg"
+                          alt="Deletar"
+                          title={`Deletar imagem ${index + 1}`}
+                        />
+                      )}
                     </AnimatedPage>
                   ));
                 } catch (error) {
-                  console.error('Erro no map das imagens:', error);
+                  console.error("Erro no map das imagens:", error);
                   return null;
                 }
               })()}

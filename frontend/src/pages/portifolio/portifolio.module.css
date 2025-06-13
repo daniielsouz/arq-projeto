@@ -1,6 +1,6 @@
 @font-face {
-  font-family: 'Brown Sugar';
-  src: url('/fonts/BrownSugar.ttf') format('opentype');
+  font-family: "Brown Sugar";
+  src: url("/fonts/BrownSugar.ttf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
@@ -82,7 +82,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   color: var(--background-color);
-  font-family: 'Brown Sugar', cursive;
+  font-family: "Brown Sugar", cursive;
   font-size: 2.5rem;
   padding: 0.3em 0.8em;
   border-radius: 10px;

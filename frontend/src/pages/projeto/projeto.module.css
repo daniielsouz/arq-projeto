@@ -11,6 +11,14 @@
   text-transform: uppercase;
 }
 
+.description {
+  column-count: 2;
+  column-gap: 5%;
+  padding: 1em 3em;
+  font-size: 18px;
+  line-height: 1.2em;
+}
+
 .containerImg {
   column-count: 3;
   column-gap: 20px;
@@ -85,13 +93,11 @@
   right: 2%;
 }
 
-
 .modalImage {
   max-width: 90%;
   max-height: 90%;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  
 }
 
 @media (max-width: 768px) {
@@ -132,5 +138,4 @@
     max-width: 95%;
     max-height: 80%;
   }
-  
 }

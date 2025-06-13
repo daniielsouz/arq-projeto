@@ -1,10 +1,10 @@
-@import url('./reset.css');
-@import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+@import url("./reset.css");
+@import url("https://fonts.googleapis.com/css2?family=Quicksand&display=swap");
 
 :root {
-  --text-nav-color:#605b54;
+  --text-nav-color: #605b54;
   --text-color: #7f6154;
-  --background-color:#ece9e5d7;
+  --background-color: #ece9e5d7;
 }
 
 * {
@@ -14,10 +14,11 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   scroll-behavior: smooth;
-  font-family: 'Quicksand', sans-serif;
+  font-family: "Quicksand", sans-serif;
   background-color: var(--background-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -26,16 +27,17 @@ html, body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
 }
 
 a {
   text-decoration: none;
 }
 
-img{
+img {
   user-select: none;
-  -webkit-user-drag: none; 
+  -webkit-user-drag: none;
 }
 
 .app-wrapper {
@@ -66,25 +68,40 @@ strong {
 }
 
 .globalButton {
+  position: relative;
   margin: 20px;
   border: none;
   padding: 10px 20px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-radius: 50% 25px;
   cursor: pointer;
+  background: none;
+  overflow: hidden;
+}
+
+.globalButton::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0%;
+  height: 2px;
+  background-color: var(--text-color);
+  transform: translateX(-50%);
+  transition: width 0.3s ease-in-out;
 }
 
 .globalButton:hover {
-  transform: scale(1.1); 
-  box-shadow: 0 5px 5px var(--text-color); 
+  transform: scale(1.1);
   animation: border-radius-animation 2s ease-in-out infinite alternate-reverse;
+}
+
+.globalButton:hover::after {
+  width: 100%;
 }
 
 .globalButton:active {
   transform: scale(0.9);
-  box-shadow: 0 2px 2px var(--text-color);
 }
-
 .globalInput {
   border-radius: 10px;
   border: 1px solid var(--text-color);
@@ -92,27 +109,18 @@ strong {
 }
 
 .globalInput::placeholder {
-  background: var(--text-color); 
+  background: var(--text-color);
 }
 
-@keyframes border-radius-animation {
-  0% {
-    border-radius: 50% 25px;
-  }
-  100% {
-    border-radius: 25px 50%;
-  }
-}
-
-@media(max-width: 768px) {
+@media (max-width: 768px) {
   .globalTitleSection {
     font-size: 1em;
     padding: 1.5em;
   }
 }
 
-@media(max-width: 480px) {
+@media (max-width: 480px) {
   .globalTitleSection {
-    padding: 1.5em 0 ;
+    padding: 1.5em 0;
   }
 }
