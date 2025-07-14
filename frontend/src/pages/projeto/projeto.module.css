@@ -141,5 +141,6 @@
   .description {
     column-count: 1;
     font-size: 14px;
+    padding: 1em;
   }
 }
