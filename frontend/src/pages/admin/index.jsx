@@ -21,8 +21,18 @@ function Adm() {
     galeryFiles.length > 1 ? "imagens selecionadas" : "imagem selecionada";
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/portifolio`)
-      .then((res) => res.json())
+    const token = localStorage.getItem("token");
+    fetch(`${import.meta.env.VITE_API_URL}/portifolio`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Erro ao buscar projetos");
+        }
+        return res.json();
+      })
       .then((data) => setProjects(data))
       .catch((err) => {
         console.error("Erro ao buscar projetos:", err);
@@ -329,6 +339,7 @@ function Adm() {
               src="/img/delete.svg"
               alt="Deletar"
               title="Deletar todo projeto"
+              style={{ cursor: "pointer" }}
             />
             <label htmlFor="addPhoto">
               <img
@@ -409,40 +420,30 @@ function Adm() {
                   }
                   return selectedProject.galeryImg.map((url, index) => (
                     <AnimatedPage key={`${selectedProject._id}-${index}`}>
-                      <label htmlFor="delect">
-                        <div className={style.imgWrapper}>
+                      <div className={style.imgWrapper}>
+                        <label htmlFor={`del${index}`}>
                           <img
+                            title={`Deletar imagem ${index + 1}`}
                             className={style.imgCustom}
                             src={url.url}
                             alt={`Imagem ${index}`}
                           />
-                        </div>
-                      </label>
-                      {selectedProject.galeryImg.length === 1 ? (
-                        <input
+                        </label>
+                        <button
                           hidden
-                          id="delect"
-                          onClick={() =>
-                            !isDeleting && handleDelete(selectedProject._id)
-                          }
+                          id={`del${index}`}
                           className={style.icon}
-                          src="/img/delete.svg"
-                          alt="Deletar"
-                          title="Deletar projeto"
+                          onClick={() => {
+                            if (isDeleting) return;
+                            if (selectedProject.galeryImg.length <= 1) {
+                              handleDelete(selectedProject._id);
+                            } else {
+                              handleDeleteImage(selectedProject._id, url.url);
+                            }
+                          }}
+                          style={{ cursor: "pointer" }}
                         />
-                      ) : (
-                        <input
-                          hidden
-                          id="delect"
-                          onClick={() =>
-                            handleDeleteImage(selectedProject._id, url.url)
-                          }
-                          className={style.icon}
-                          src="/img/delete.svg"
-                          alt="Deletar"
-                          title={`Deletar imagem ${index + 1}`}
-                        />
-                      )}
+                      </div>
                     </AnimatedPage>
                   ));
                 } catch (error) {

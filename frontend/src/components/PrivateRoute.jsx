@@ -1,15 +1,14 @@
-import { Navigate, useLocation } from 'react-router-dom';
-
-const isAuthenticated = () => {
-  return localStorage.getItem('token') !== null;
-};
+import React from "react";
+import { Navigate } from "react-router-dom";
 
 export default function PrivateRoute({ children }) {
-  const location = useLocation();
+  const token = localStorage.getItem("token");
 
-  if (!isAuthenticated()) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
+  if (!token) {
+    // Se não estiver logado, redireciona para /login
+    return <Navigate to="/login" replace />;
   }
 
+  // Se tiver token, renderiza o conteúdo
   return children;
 }
