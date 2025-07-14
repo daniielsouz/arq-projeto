@@ -14,7 +14,7 @@
 .description {
   column-count: 2;
   column-gap: 5%;
-  padding: 1em 3em;
+  padding: 1em 20%;
   font-size: 18px;
   line-height: 1.2em;
 }
@@ -137,5 +137,9 @@
   .modalImage {
     max-width: 95%;
     max-height: 80%;
+  }
+  .description {
+    column-count: 1;
+    font-size: 14px;
   }
 }
